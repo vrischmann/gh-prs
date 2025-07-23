@@ -193,13 +193,13 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "gh prs",
 	Short: "Interactively list and open GitHub Pull Requests",
-	Long: `A GitHub CLI extension that fetches pull requests based on review status 
+	Long: `A GitHub CLI extension that fetches pull requests based on review status
 and provides an interactive selection interface to open them in your browser.
 
 Requires GitHub CLI (gh) to be installed and authenticated.`,
 	Version: version,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -347,7 +347,7 @@ func getOrganization() (string, error) {
 func init() {
 	// Add persistent flags
 	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (defaults to current repo's organization)")
-	
+
 	// Add commands to the root command
 	rootCmd.AddCommand(toReviewCmd)
 	rootCmd.AddCommand(reviewedCmd)
