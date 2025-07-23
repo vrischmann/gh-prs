@@ -29,6 +29,9 @@ jobs:
         with:
           go-version-file: go.mod
 
+      - name: Install just
+        uses: extractions/setup-just@v3
+
       - name: Get version
         id: version
         run: |
@@ -41,8 +44,7 @@ jobs:
           echo "Version: $VERSION"
 
       - name: Build for all platforms
-        run: |
-          VERSION="${{ steps.version.outputs.version }}" make build-all
+        run: just build-all
 
       - name: Create release
         uses: softprops/action-gh-release@v2

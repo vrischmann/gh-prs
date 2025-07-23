@@ -74,22 +74,22 @@ gh prs --help
 
 ### Prerequisites
 - Go 1.21 or later
-- Make (optional, for build scripts)
+- [just](https://github.com/casey/just) (optional, for build scripts)
 
 ### Building
 
 ```bash
 # Build for current platform
-make build
+just build
 
 # Build for all platforms
-make build-all
+just build-all
 
 # Install locally for testing
-make local-install
+just local-install
 
 # Run tests
-make test
+just test
 ```
 
 ### Project Structure
@@ -98,7 +98,7 @@ make test
 gh-prs/
 ├── main.go              # Main application code
 ├── go.mod               # Go module definition
-├── Makefile             # Build scripts
+├── justfile             # Build scripts
 ├── README.md            # This file
 └── .github/
     └── workflows/       # GitHub Actions for CI/CD
