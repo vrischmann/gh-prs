@@ -1,14 +1,13 @@
 # gh-prs
 
-A GitHub CLI extension for interactively listing and opening Pull Requests based on review status.
+A GitHub CLI extension for interactively listing and opening open Pull Requests based on review status.
 
 ## Features
 
-- 🔍 **Smart PR Discovery**: Automatically detects your organization or specify with `--org`
-- 📝 **Review Status Filtering**: View PRs you need to review or have already reviewed
-- 🎯 **Interactive Selection**: Beautiful terminal UI for browsing and selecting PRs
-- 🌐 **Browser Integration**: Opens selected PRs directly in your default browser
-- ⚡ **Fast & Lightweight**: Built in Go for optimal performance
+- Automatically detects your organization or specify with `--org`
+- Filter open PRs by review status (need to review vs already reviewed)
+- Interactive terminal UI for browsing and selecting PRs
+- Opens selected PRs directly in your default browser
 
 ## Installation
 
@@ -18,13 +17,13 @@ A GitHub CLI extension for interactively listing and opening Pull Requests based
 ### Install from GitHub Releases
 
 ```bash
-gh extension install your-username/gh-prs
+gh extension install vrischmann/gh-prs
 ```
 
 ### Install from Source
 
 ```bash
-git clone https://github.com/your-username/gh-prs.git
+git clone https://github.com/vrischmann/gh-prs.git
 cd gh-prs
 gh extension install .
 ```
@@ -34,10 +33,10 @@ gh extension install .
 ### Basic Commands
 
 ```bash
-# List PRs waiting for your review
+# List open PRs waiting for your review
 gh prs to-review
 
-# List PRs you have already reviewed
+# List open PRs you have already reviewed
 gh prs reviewed
 
 # Specify an organization
@@ -57,18 +56,6 @@ gh prs reviewed --org myorg
 - `Enter`: Open selected PR in browser
 - `q` or `Esc` or `Ctrl+C`: Quit
 
-## Examples
-
-```bash
-# Review PRs in your current organization
-gh prs to-review
-
-# Check PRs you've reviewed in a specific org
-gh prs reviewed --org acme-corp
-
-# Get help
-gh prs --help
-```
 
 ## Development
 
@@ -92,32 +79,6 @@ just local-install
 just test
 ```
 
-### Project Structure
-
-```
-gh-prs/
-├── main.go              # Main application code
-├── go.mod               # Go module definition
-├── justfile             # Build scripts
-├── README.md            # This file
-└── .github/
-    └── workflows/       # GitHub Actions for CI/CD
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built with [Cobra](https://github.com/spf13/cobra) for CLI framework
-- Uses [Bubble Tea](https://github.com/charmbracelet/bubbletea) for interactive UI
-- Styled with [Lipgloss](https://github.com/charmbracelet/lipgloss)
