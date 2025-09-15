@@ -60,7 +60,7 @@ gh prs reviewed --org myorg
 ## Development
 
 ### Prerequisites
-- Go 1.21 or later
+- Go 1.25 or later
 - [just](https://github.com/casey/just) (optional, for build scripts)
 
 ### Building
