@@ -39,8 +39,12 @@ const (
 func fetchPRs(typ fetchType, org string) ([]pullRequest, error) {
 	args := []string{
 		"--json", "url,repository,number,title",
-		"search", "prs", fmt.Sprintf("org:%s", org), "is:open", "archived:false",
+		"search", "prs",
 	}
+	if org != "" {
+		args = append(args, fmt.Sprintf("org:%s", org))
+	}
+	args = append(args, "is:open", "archived:false")
 	if !includeDrafts {
 		args = append(args, "draft:false")
 	}
@@ -228,7 +232,11 @@ organization where you are a requested reviewer and have not yet submitted a rev
 		}
 
 		if len(prs) == 0 {
-			fmt.Printf("No open Pull Requests found in '%s' where you are a requested reviewer.\n", org)
+			if org != "" {
+				fmt.Printf("No open Pull Requests found in '%s' where you are a requested reviewer.\n", org)
+			} else {
+				fmt.Println("No open Pull Requests found where you are a requested reviewer.")
+			}
 			return nil
 		}
 
@@ -273,7 +281,11 @@ organization that you have already submitted a review for.`,
 		}
 
 		if len(prs) == 0 {
-			fmt.Printf("No open Pull Requests found in '%s' that you have reviewed.\n", org)
+			if org != "" {
+				fmt.Printf("No open Pull Requests found in '%s' that you have reviewed.\n", org)
+			} else {
+				fmt.Println("No open Pull Requests found that you have reviewed.")
+			}
 			return nil
 		}
 
@@ -311,6 +323,7 @@ func checkGHInstalled() error {
 
 // getOrganization determines the organization to use for PR searches.
 // It uses the --org flag if provided, otherwise attempts to detect from current repo.
+// Returns an empty string if no organization can be determined (searches all accessible PRs).
 func getOrganization() (string, error) {
 	if orgFlag != "" {
 		return orgFlag, nil
@@ -324,11 +337,8 @@ func getOrganization() (string, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		stderrStr := stderr.String()
-		if strings.Contains(stderrStr, "not a git repository") || strings.Contains(stderrStr, "not found") {
-			return "", fmt.Errorf("not in a GitHub repository. Please use --org flag to specify organization")
-		}
-		return "", fmt.Errorf("unable to determine organization: %w\nStderr: %s", err, stderrStr)
+		// Not in a git repository - return empty string to search all accessible PRs
+		return "", nil
 	}
 
 	var repo struct {
@@ -341,16 +351,12 @@ func getOrganization() (string, error) {
 		return "", fmt.Errorf("failed to parse repository information: %w", err)
 	}
 
-	if repo.Owner.Login == "" {
-		return "", fmt.Errorf("unable to determine organization from current repository")
-	}
-
 	return repo.Owner.Login, nil
 }
 
 func init() {
 	// Add persistent flags
-	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (defaults to current repo's organization)")
+	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (defaults to current repo's organization, or all accessible PRs if not in a repo)")
 	rootCmd.PersistentFlags().BoolVar(&includeDrafts, "include-drafts", false, "Include draft PRs in search results")
 
 	// Add commands to the root command
