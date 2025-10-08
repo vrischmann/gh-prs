@@ -214,29 +214,20 @@ Requires GitHub CLI (gh) to be installed and authenticated.`,
 var toReviewCmd = &cobra.Command{
 	Use:   "to-review",
 	Short: "List open PRs with review requests for you",
-	Long: `Fetches and interactively lists open Pull Requests in the specified
-organization where you are a requested reviewer and have not yet submitted a review.`,
+	Long: `Fetches and interactively lists open Pull Requests where you are a
+requested reviewer and have not yet submitted a review.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := checkGHInstalled(); err != nil {
 			return err
 		}
 
-		org, err := getOrganization()
-		if err != nil {
-			return err
-		}
-
-		prs, err := fetchPRs(toReviewFetchType, org)
+		prs, err := fetchPRs(toReviewFetchType, orgFlag)
 		if err != nil {
 			return fmt.Errorf("failed to fetch 'to review' PRs: %w", err)
 		}
 
 		if len(prs) == 0 {
-			if org != "" {
-				fmt.Printf("No open Pull Requests found in '%s' where you are a requested reviewer.\n", org)
-			} else {
-				fmt.Println("No open Pull Requests found where you are a requested reviewer.")
-			}
+			fmt.Println("No open Pull Requests found where you are a requested reviewer.")
 			return nil
 		}
 
@@ -263,29 +254,20 @@ organization where you are a requested reviewer and have not yet submitted a rev
 var reviewedCmd = &cobra.Command{
 	Use:   "reviewed",
 	Short: "List open PRs you have already reviewed",
-	Long: `Fetches and interactively lists open Pull Requests in the specified
-organization that you have already submitted a review for.`,
+	Long: `Fetches and interactively lists open Pull Requests that you have
+already submitted a review for.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := checkGHInstalled(); err != nil {
 			return err
 		}
 
-		org, err := getOrganization()
-		if err != nil {
-			return err
-		}
-
-		prs, err := fetchPRs(reviewedFetchType, org)
+		prs, err := fetchPRs(reviewedFetchType, orgFlag)
 		if err != nil {
 			return fmt.Errorf("failed to fetch 'reviewed' PRs: %w", err)
 		}
 
 		if len(prs) == 0 {
-			if org != "" {
-				fmt.Printf("No open Pull Requests found in '%s' that you have reviewed.\n", org)
-			} else {
-				fmt.Println("No open Pull Requests found that you have reviewed.")
-			}
+			fmt.Println("No open Pull Requests found that you have reviewed.")
 			return nil
 		}
 
@@ -321,42 +303,9 @@ func checkGHInstalled() error {
 	return nil
 }
 
-// getOrganization determines the organization to use for PR searches.
-// It uses the --org flag if provided, otherwise attempts to detect from current repo.
-// Returns an empty string if no organization can be determined (searches all accessible PRs).
-func getOrganization() (string, error) {
-	if orgFlag != "" {
-		return orgFlag, nil
-	}
-
-	// Try to get organization from current repository
-	cmd := exec.Command("gh", "repo", "view", "--json", "owner")
-	var stdout, stderr bytes.Buffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	err := cmd.Run()
-	if err != nil {
-		// Not in a git repository - return empty string to search all accessible PRs
-		return "", nil
-	}
-
-	var repo struct {
-		Owner struct {
-			Login string `json:"login"`
-		} `json:"owner"`
-	}
-
-	if err := json.Unmarshal(stdout.Bytes(), &repo); err != nil {
-		return "", fmt.Errorf("failed to parse repository information: %w", err)
-	}
-
-	return repo.Owner.Login, nil
-}
-
 func init() {
 	// Add persistent flags
-	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (defaults to current repo's organization, or all accessible PRs if not in a repo)")
+	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (optional, searches all accessible PRs if not specified)")
 	rootCmd.PersistentFlags().BoolVar(&includeDrafts, "include-drafts", false, "Include draft PRs in search results")
 
 	// Add commands to the root command
