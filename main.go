@@ -45,7 +45,7 @@ func fetchPRs(typ fetchType, org string) ([]pullRequest, error) {
 		args = append(args, fmt.Sprintf("org:%s", org))
 	}
 	args = append(args, "is:open", "archived:false")
-	if !includeDrafts {
+	if !draft {
 		args = append(args, "draft:false")
 	}
 	switch typ {
@@ -197,10 +197,10 @@ func startInteractiveUI(prs []pullRequest, description string) (string, error) {
 }
 
 var (
-	version       = "dev"
-	orgFlag       string
-	includeDrafts bool
-	verbose       bool
+	version = "dev"
+	orgFlag string
+	draft   bool
+	verbose bool
 )
 
 var rootCmd = &cobra.Command{
@@ -311,7 +311,7 @@ func checkGHInstalled() error {
 func init() {
 	// Add persistent flags
 	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (optional, searches all accessible PRs if not specified)")
-	rootCmd.PersistentFlags().BoolVar(&includeDrafts, "include-drafts", false, "Include draft PRs in search results")
+	rootCmd.PersistentFlags().BoolVar(&draft, "draft", false, "Include draft PRs in search results")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Print the gh search command before executing it")
 
 	// Add commands to the root command
