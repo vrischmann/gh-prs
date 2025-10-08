@@ -39,7 +39,7 @@ const (
 func fetchPRs(typ fetchType, org string) ([]pullRequest, error) {
 	args := []string{
 		"--json", "url,repository,number,title",
-		"search", "prs", fmt.Sprintf("org:%s", org), "is:open",
+		"search", "prs", fmt.Sprintf("org:%s", org), "is:open", "archived:false",
 	}
 	switch typ {
 	case reviewedFetchType:
