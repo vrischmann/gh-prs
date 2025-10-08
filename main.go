@@ -41,6 +41,9 @@ func fetchPRs(typ fetchType, org string) ([]pullRequest, error) {
 		"--json", "url,repository,number,title",
 		"search", "prs", fmt.Sprintf("org:%s", org), "is:open", "archived:false",
 	}
+	if !includeDrafts {
+		args = append(args, "draft:false")
+	}
 	switch typ {
 	case reviewedFetchType:
 		args = append(args, "reviewed-by:@me")
@@ -186,8 +189,9 @@ func startInteractiveUI(prs []pullRequest, description string) (string, error) {
 }
 
 var (
-	version = "dev"
-	orgFlag string
+	version       = "dev"
+	orgFlag       string
+	includeDrafts bool
 )
 
 var rootCmd = &cobra.Command{
@@ -347,6 +351,7 @@ func getOrganization() (string, error) {
 func init() {
 	// Add persistent flags
 	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (defaults to current repo's organization)")
+	rootCmd.PersistentFlags().BoolVar(&includeDrafts, "include-drafts", false, "Include draft PRs in search results")
 
 	// Add commands to the root command
 	rootCmd.AddCommand(toReviewCmd)
