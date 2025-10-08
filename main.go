@@ -156,7 +156,14 @@ func (m model) View() string {
 	}
 
 	s := strings.Builder{}
-	s.WriteString(fmt.Sprintf("Select a PR %s:\n\n", m.description))
+
+	// Show count of PRs found with styling
+	countStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("12"))
+	countMsg := fmt.Sprintf("Found %d pull request(s) %s", len(m.prs), m.description)
+	s.WriteString(countStyle.Render(countMsg))
+	s.WriteString("\n\nSelect a PR:\n\n")
 
 	for i, pr := range m.prs {
 		cursor := " " // no cursor
