@@ -57,6 +57,10 @@ func fetchPRs(typ fetchType, org string) ([]pullRequest, error) {
 
 	cmd := exec.Command("gh", args...)
 
+	if verbose {
+		fmt.Fprintf(os.Stderr, "Running: gh %s\n", strings.Join(args, " "))
+	}
+
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -196,6 +200,7 @@ var (
 	version       = "dev"
 	orgFlag       string
 	includeDrafts bool
+	verbose       bool
 )
 
 var rootCmd = &cobra.Command{
@@ -307,6 +312,7 @@ func init() {
 	// Add persistent flags
 	rootCmd.PersistentFlags().StringVarP(&orgFlag, "org", "o", "", "GitHub organization to search (optional, searches all accessible PRs if not specified)")
 	rootCmd.PersistentFlags().BoolVar(&includeDrafts, "include-drafts", false, "Include draft PRs in search results")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Print the gh search command before executing it")
 
 	// Add commands to the root command
 	rootCmd.AddCommand(toReviewCmd)
